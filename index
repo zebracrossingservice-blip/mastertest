@@ -131,4 +131,263 @@
                 <input type="number" id="miss_meeting" value="0" min="0" max="28">
             </div>
             <div>
-                <label>當週全
+                <label>當週全分店累計「開門店務缺失」總次數</label>
+                <input type="number" id="miss_shop" value="0" min="0">
+            </div>
+        </div>
+        <div style="margin-top:12px; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd;">
+            <label style="color:#e91e63;">⚠️ 跨店店務缺失勾選（觸發加倍扣分機制）：</label>
+            <div style="margin-top:8px;">
+                <input type="checkbox" id="miss_shop_zy"> 中原店 &nbsp;&nbsp;
+                <input type="checkbox" id="miss_shop_xz"> 新竹店 &nbsp;&nbsp;
+                <input type="checkbox" id="miss_shop_zs"> 中山店 &nbsp;&nbsp;
+                <input type="checkbox" id="miss_shop_nx"> 南西店
+                <span style="font-size:12px; color:#666; margin-left:10px;">(勾選達2間店以上則當週缺失扣分變2倍)</span>
+            </div>
+        </div>
+    </div>
+
+    <h2>四、社群行銷與市場觀察 (權重 20%)</h2>
+    <div class="section">
+        <div class="grid-2">
+            <div>
+                <label>當週各店社群行銷不合規總次數 (限動未滿5篇/未回覆)</label>
+                <input type="number" id="social_fail" value="0" min="0">
+            </div>
+            <div>
+                <label>當週市場客流觀察與競品廠商考核深度</label>
+                <select id="market_score">
+                    <option value="10">每日確實計數、競品分析完整 (10分)</option>
+                    <option value="7">數據有提供但分析不夠深入 (77分)</option>
+                    <option value="3">客流流於形式、天數有缺漏 (3分)</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-top:12px; background:#fff; padding:10px; border-radius:6px; border:1px solid #ddd;">
+            <label style="color:#e91e63;">⚠️ 跨店社群不合格勾選（觸發加倍扣分機制）：</label>
+            <div style="margin-top:8px;">
+                <input type="checkbox" id="sc_fail_zy"> 中原店 &nbsp;&nbsp;
+                <input type="checkbox" id="sc_fail_xz"> 新竹店 &nbsp;&nbsp;
+                <input type="checkbox" id="sc_fail_zs"> 中山店 &nbsp;&nbsp;
+                <input type="checkbox" id="sc_fail_nx"> 南西店
+                <span style="font-size:12px; color:#666; margin-left:10px;">(勾選達2間店以上則當週不合規扣分變2倍)</span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-calc" onclick="calculateWeeklyScore()">運算當週考核得分</button>
+
+    <div id="resultArea" class="result-box pass">
+        <h3 style="margin-top:0;">評分結果：<span id="resWeek"></span> 考核報告</h3>
+        <div class="grid-2">
+            <div style="font-size: 18px; font-weight: bold;">本週總得分：<span id="totalScore" style="font-size:28px; color:#0071e3;">0</span> 分</div>
+            <div style="font-size: 16px; font-weight: bold;">當週考績等第：<span id="gradeText" style="font-size:20px;">-</span></div>
+        </div>
+        
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>第一週</th>
+                    <th>第二週</th>
+                    <th>第三週</th>
+                    <th>第四週</th>
+                    <th>月度總平均</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="t_w1">-</td>
+                    <td id="t_w2">-</td>
+                    <td id="t_w3">-</td>
+                    <td id="t_w4">-</td>
+                    <td id="t_avg" style="font-weight:bold; color:#0071e3;">-</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div id="monthlyReportCard" style="margin-top:15px; padding:15px; background:#fff; border-radius:6px; border:2px solid #0071e3; display:none;">
+            <h4 style="margin:0 0 8px 0; color:#0071e3; font-size:16px;">👑 連續四週·月度考績結算報告</h4>
+            <div id="monthlyDecisionText" style="font-weight:bold; font-size:15px; line-height:1.6;"></div>
+        </div>
+
+        <h4 style="margin-bottom:5px; margin-top:15px;">複製生成文字 (發送至主管群組與存檔)</h4>
+        <textarea id="summaryOutput" class="summary-text" readonly></textarea>
+        <button class="btn-copy" onclick="copyKpiText()">一鍵複製週/月考績報告</button>
+    </div>
+</div>
+
+<script>
+    const weeklyRecord = { "第一週": null, "第二週": null, "第三週": null, "第四週": null };
+
+    function calculateWeeklyScore() {
+        const currentWeek = document.getElementById('weekSelect').value;
+        const manager = document.getElementById('managerName').value;
+
+        // 一、財務業績 (滿分 20)
+        const r_zy = parseFloat(document.getElementById('rev_rate_zy').value) || 0;
+        const r_xz = parseFloat(document.getElementById('rev_rate_xz').value) || 0;
+        const r_zs = parseFloat(document.getElementById('rev_rate_zs').value) || 0;
+        const r_nx = parseFloat(document.getElementById('rev_rate_nx').value) || 0;
+        const avg_rev_rate = (r_zy + r_xz + r_zs + r_nx) / 4;
+        
+        let finance_score = 20;
+        if (avg_rev_rate < 100) {
+            const drop = Math.floor((100 - avg_rev_rate) / 5);
+            finance_score -= (drop * 2);
+        }
+        if (finance_score < 0) finance_score = 0;
+
+        // UPT (滿分 15)
+        const u_zy = parseFloat(document.getElementById('upt_zy').value) || 0;
+        const u_xz = parseFloat(document.getElementById('upt_xz').value) || 0;
+        const u_zs = parseFloat(document.getElementById('upt_zs').value) || 0;
+        const u_nx = parseFloat(document.getElementById('upt_nx').value) || 0;
+        let upt_score = 15;
+        if (u_zy <= 1.99 || u_xz <= 1.99 || u_zs <= 1.99 || u_nx <= 1.99) {
+            upt_score = 10;
+        }
+
+        // 二、人員招募、教育培訓與「各店考績防弊機制」
+        const recruit_score = parseFloat(document.getElementById('recruit_score').value) || 0;
+        const study_score = parseFloat(document.getElementById('study_score').value) || 0;
+        
+        let e_zy = document.getElementById('cheat_zy').checked ? 0 : (parseFloat(document.getElementById('emp_score_zy').value) || 0);
+        let e_xz = document.getElementById('cheat_xz').checked ? 0 : (parseFloat(document.getElementById('emp_score_xz').value) || 0);
+        let e_zs = document.getElementById('cheat_zs').checked ? 0 : (parseFloat(document.getElementById('emp_score_zs').value) || 0);
+        let e_nx = document.getElementById('cheat_nx').checked ? 0 : (parseFloat(document.getElementById('emp_score_nx').value) || 0);
+        
+        let fraud_detected = [];
+        if(document.getElementById('cheat_zy').checked) fraud_detected.push("中原店");
+        if(document.getElementById('cheat_xz').checked) fraud_detected.push("新竹店");
+        if(document.getElementById('cheat_zs').checked) fraud_detected.push("中山店");
+        if(document.getElementById('cheat_nx').checked) fraud_detected.push("南西店");
+
+        const avg_emp_performance = (e_zy + e_xz + e_zs + e_nx) / 4;
+        const emp_index_score = (avg_emp_performance / 100) * 15; 
+        const total_hr_score = recruit_score + study_score + emp_index_score;
+
+        // 三、店務與會議
+        const miss_m = parseInt(document.getElementById('miss_meeting').value) || 0;
+        let meeting_score = 10 - miss_m;
+        if (meeting_score < 0) meeting_score = 0;
+
+        const miss_s_count = parseInt(document.getElementById('miss_shop').value) || 0;
+        let shop_miss_checked = 0;
+        if(document.getElementById('miss_shop_zy').checked) shop_miss_checked++;
+        if(document.getElementById('miss_shop_xz').checked) shop_miss_checked++;
+        if(document.getElementById('miss_shop_zs').checked) shop_miss_checked++;
+        if(document.getElementById('miss_shop_nx').checked) shop_miss_checked++;
+
+        let shop_deduct = miss_s_count * 1;
+        let shop_punish_msg = "";
+        if (shop_miss_checked >= 2) {
+            shop_deduct = miss_s_count * 2;
+            shop_punish_msg = `⚠️ 偵測跨店(${shop_miss_checked}店)發生店務缺失，觸發「加倍扣分」機制！`;
+        }
+        let shop_score = 10 - shop_deduct;
+        if (shop_score < 0) shop_score = 0;
+
+        // 四、社群與市場
+        const social_f_count = parseInt(document.getElementById('social_fail').value) || 0;
+        let social_fail_checked = 0;
+        if(document.getElementById('sc_fail_zy').checked) social_fail_checked++;
+        if(document.getElementById('sc_fail_xz').checked) social_fail_checked++;
+        if(document.getElementById('sc_fail_zs').checked) social_fail_checked++;
+        if(document.getElementById('sc_fail_nx').checked) social_fail_checked++;
+
+        let social_deduct = social_f_count * 1.5;
+        let social_punish_msg = "";
+        if (social_fail_checked >= 2) {
+            social_deduct = social_f_count * 3;
+            social_punish_msg = `⚠️ 偵測跨店(${social_fail_checked}店)社群執行不合規，觸發「加倍扣分」機制！`;
+        }
+        let social_score = 10 - social_deduct;
+        if (social_score < 0) social_score = 0;
+
+        const market_score = parseFloat(document.getElementById('market_score').value) || 0;
+
+        // 總分加總
+        const total = finance_score + upt_score + total_hr_score + meeting_score + shop_score + social_score + market_score;
+        
+        let grade = "C (需加強)";
+        if (total >= 90) grade = "A+ (表現卓越)";
+        else if (total >= 85) grade = "A (正常達標)";
+        else if (total >= 75) grade = "B (尚待改進)";
+
+        weeklyRecord[currentWeek] = total;
+        document.getElementById(`t_w${currentWeek === "第一週"?1:currentWeek==="第二週"?2:currentWeek==="第三週"?3:4}`).innerText = total.toFixed(1) + "分";
+
+        let sum = 0, count = 0;
+        for (let w in weeklyRecord) {
+            if (weeklyRecord[w] !== null) { sum += weeklyRecord[w]; count++; }
+        }
+        const avg = (sum / count).toFixed(1);
+        document.getElementById('t_avg').innerText = avg + "分";
+
+        let monthlyMsg = "";
+        let finalReportBlock = document.getElementById('monthlyReportCard');
+        
+        if (count === 4) {
+            finalReportBlock.style.display = "block";
+            const finalScore = parseFloat(avg);
+            
+            if (finalScore >= 90) {
+                monthlyMsg = `<span style="color:#2e7d32;">👑 月考績：【90分以上 - 表現優秀】</span><br>💰 獎金結算：全額發給，安排優秀績效表揚！`;
+            } else if (finalScore >= 85 && finalScore < 90) {
+                monthlyMsg = `<span style="color:#0071e3;">👍 月考績：【85-90分 - 都有做到】</span><br>💰 獎金結算：標準達標，全額發給完畢。`;
+            } else if (finalScore >= 75 && finalScore < 85) {
+                monthlyMsg = `<span style="color:#f57c00;">⚠️ 月考績：【75-85分 - 尚待改進】</span><br>💰 獎金結算：<span style="color:red; font-size:16px;">獎金打 75折 至 85折 發給！</span>`;
+            } else if (finalScore >= 70 && finalScore < 75) {
+                monthlyMsg = `<span style="color:#c62828;">🚨 月考績：【70-75分 - 績效落後】</span><br>💰 獎金結算：<span style="color:red; font-size:16px;">獎金僅核發 30%！</span><br>❗ 處置狀態：<span style="background:yellow; padding:2px;">【列入重點輔導名單】連續兩個月以此分數將強制列入資遣名單！</span>`;
+            } else {
+                monthlyMsg = `<span style="color:#b71c1c; font-size:16px;">🔥 月考績：【70分以下 - 重度不適任】</span><br>💰 獎金結算：<span style="color:red; font-size:16px;">當月不發給任何獎金！</span><br>❌ 處置狀態：<span style="background:#ffcdd2; color:#b71c1c; padding:4px; font-weight:bold; border-radius:4px;">【即刻列入不適任資遣名單】</span>`;
+            }
+            document.getElementById('monthlyDecisionText').innerHTML = monthlyMsg;
+        } else {
+            finalReportBlock.style.display = "none";
+        }
+
+        document.getElementById('resWeek').innerText = currentWeek;
+        document.getElementById('totalScore').innerText = total.toFixed(1);
+        document.getElementById('gradeText').innerText = grade;
+        document.getElementById('resultArea').style.display = "block";
+
+        let text = `📊 【Zbcsmade 主管職責週考核報告】\n`;
+        text += `👤 被考核人：${manager}  |  📅 考核週期：${currentWeek}\n`;
+        text += `====================================\n`;
+        text += `得分診斷細項：\n`;
+        text += `💰 財務業績管控：${(finance_score + upt_score).toFixed(1)}分\n`;
+        text += `👥 人員教育與考績指標：${total_hr_score.toFixed(1)}分 (各店員工均分: ${avg_emp_performance.toFixed(1)}分)\n`;
+        if(fraud_detected.length > 0) text += `   🚨 【查核舞弊通報】：${fraud_detected.join('、')}因查有缺失或刻意灌水，該店分數直接以0分重懲核算！\n`;
+        text += `🏪 店務缺失與會議：${(meeting_score + shop_score).toFixed(1)}分 (店務缺失: ${miss_s_count}次)\n`;
+        if(shop_punish_msg) text += `   🔥 ${shop_punish_msg}\n`;
+        text += `📱 社群與市場觀察：${(social_score + market_score).toFixed(1)}分\n`;
+        if(social_punish_msg) text += `   🔥 ${social_punish_msg}\n`;
+        text += `------------------------------------\n`;
+        text += `🎯 當週總得分：${total.toFixed(1)} 分 ➔ 考績等第：${grade}\n\n`;
+        
+        if (count === 4) {
+            text += `🚨 【連續四週·月度考績判定結果】\n`;
+            text += ` 月度總平均分數：${avg} 分\n`;
+            const fs = parseFloat(avg);
+            if (fs >= 90) text += ` ➔ 判定結果：表現優秀。獎金全額發給！\n`;
+            else if (fs >= 85) text += ` ➔ 判定結果：都有做到。獎金全額發給！\n`;
+            else if (fs >= 75) text += ` ➔ 判定結果：尚待改進。獎金打 75~85 折發給！\n`;
+            else if (fs >= 70) text += ` ➔ 判定結果：績效落後。獎金僅核發 30%，並列入輔導名單(連續2個月將進行資遣)！\n`;
+            else text += ` ➔ 判定結果：重度不適任。不發給獎金，即刻列入不適任資遣名單！\n`;
+        } else {
+            text += ` 💡 月考績進度：${count}/4 週，連續輸入四週將啟動獎金與去留評定。\n`;
+        }
+        
+        document.getElementById('summaryOutput').value = text;
+    }
+
+    function copyKpiText() {
+        const txt = document.getElementById('summaryOutput');
+        txt.select();
+        document.execCommand('copy');
+        alert('聯動防弊版 考核報告已成功複製！');
+    }
+</script>
+</body>
+</html>
