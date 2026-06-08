@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>主管週評與月度考績自動計算系統 (員工考績聯動與防弊版)</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 900px; background: white; margin: 0 auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        h1 { text-align: center; color: #1c1c1e; font-size: 26px; margin-bottom: 5px; }
+        .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 25px; }
+        h2 { font-size: 18px; color: #0071e3; margin-top: 25px; border-left: 4px solid #0071e3; padding-left: 10px; padding-bottom: 2px; }
+        .section { background: #f8f9fa; padding: 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e5ea; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; font-size: 13px; color: #444; }
+        input[type="number"], select, input[type="text"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .shop-title { font-weight: bold; color: #e91e63; display: block; margin-bottom: 8px; font-size: 14px; }
+        .btn-calc { background-color: #0071e3; color: white; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 8px; width: 100%; cursor: pointer; margin-top: 20px; }
+        .btn-calc:hover { background-color: #005bb5; }
+        .result-box { margin-top: 25px; padding: 20px; border-radius: 8px; display: none; }
+        .pass { background-color: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
+        .fail { background-color: #ffebee; border: 1px solid #ffcdd2; color: #c62828; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: white; }
+        th, td { border: 1px solid #dee2e6; padding: 10px; text-align: center; font-size: 14px; }
+        th { background-color: #f1f3f5; font-weight: bold; }
+        .summary-text { width: 100%; height: 250px; font-family: monospace; background: #212529; color: #f8f9fa; padding: 12px; border-radius: 6px; margin-top: 10px; }
+        .btn-copy { background-color: #28a745; color: white; border: none; padding: 10px; font-size: 14px; border-radius: 6px; width: 100%; cursor: pointer; margin-top: 5px; }
+        .cheat-zone { font-size: 11px; color: #d32f2f; background: #fff5f5; padding: 4px; border-radius: 4px; margin-top: 5px; border: 1px dashed #ffcdd2; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>主管週評與月度考績自動計算系統</h1>
+    <div class="subtitle">評估權責：庫存與獲利管控 / 人員招募與教育 / 服務與店務達標 / 業績提升與防弊機制</div>
+
+    <div class="section grid-4">
+        <div>
+            <label>考核評分週別</label>
+            <select id="weekSelect">
+                <option value="第一週">第一週</option>
+                <option value="第二週">第二週</option>
+                <option value="第三週">第三週</option>
+                <option value="第四週">第四週</option>
+            </select>
+        </div>
+        <div><label>主管姓名</label><input type="text" id="managerName" value="門市核心主管"></div>
+        <div><label>本週中原累積件數</label><input type="number" id="zy_cum" value="2200"></div>
+        <div><label>本週新竹累積件數</label><input type="number" id="xz_cum" value="1400"></div>
+    </div>
+
+    <h2>一、財務與業績管控 (權重 35%)</h2>
+    <div class="section">
+        <div class="grid-4">
+            <div>
+                <span class="shop-title">中原店</span>
+                <label>當週營業額達標率(%)</label><input type="number" id="rev_rate_zy" value="100">
+                <label>當週平均 UPT</label><input type="number" id="upt_zy" step="0.01" value="2.1">
+            </div>
+            <div>
+                <span class="shop-title">新竹店</span>
+                <label>當週營業額達標率(%)</label><input type="number" id="rev_rate_xz" value="100">
+                <label>當週平均 UPT</label><input type="number" id="upt_xz" step="0.01" value="2.1">
+            </div>
+            <div>
+                <span class="shop-title">中山店</span>
+                <label>當週營業額達標率(%)</label><input type="number" id="rev_rate_zs" value="100">
+                <label>當週平均 UPT</label><input type="number" id="upt_zs" step="0.01" value="2.1">
+            </div>
+            <div>
+                <span class="shop-title">南西店</span>
+                <label>當週營業額達標率(%)</label><input type="number" id="rev_rate_nx" value="100">
+                <label>當週平均 UPT</label><input type="number" id="upt_nx" step="0.01" value="2.1">
+            </div>
+        </div>
+    </div>
+
+    <h2>二、人員招募與教育培訓 (權重 25% - 內含員工考績與防弊)</h2>
+    <div class="section">
+        <div class="grid-2" style="margin-bottom: 15px;">
+            <div>
+                <label>當週招募動態得分（面試/試上執行狀況）</label>
+                <select id="recruit_score">
+                    <option value="5">當週積極安排面試/試上 (5分)</option>
+                    <option value="2">進度緩慢，僅維繫履歷 (2分)</option>
+                    <option value="0">當週完全無招募動態 (0分)</option>
+                </select>
+            </div>
+            <div>
+                <label>各店22項指標學習進度狀態</label>
+                <select id="study_score">
+                    <option value="5">四店全數學會無缺漏 (5分)</option>
+                    <option value="3">有分店進度落後 (3分)</option>
+                    <option value="0">嚴重落後 (0分)</option>
+                </select>
+            </div>
+        </div>
+        
+        <label style="color: #0071e3; font-size:14px; margin-bottom:10px;">📊 各分店當週「員工平均考績分數」聯動評分欄位 (上限 15 分)：</label>
+        <div class="grid-4" style="background:#fff; padding:12px; border-radius:6px; border:1px solid #ddd;">
+            <div>
+                <span class="shop-title">中原員工考績</span>
+                <input type="number" id="emp_score_zy" value="85" max="100">
+                <div class="cheat-zone"><input type="checkbox" id="cheat_zy"> 複查缺失/舞弊</div>
+            </div>
+            <div>
+                <span class="shop-title">新竹員工考績</span>
+                <input type="number" id="emp_score_xz" value="85" max="100">
+                <div class="cheat-zone"><input type="checkbox" id="cheat_xz"> 複查缺失/舞弊</div>
+            </div>
+            <div>
+                <span class="shop-title">中山員工考績</span>
+                <input type="number" id="emp_score_zs" value="85" max="100">
+                <div class="cheat-zone"><input type="checkbox" id="cheat_zs"> 複查缺失/舞弊</div>
+            </div>
+            <div>
+                <span class="shop-title">南西員工考績</span>
+                <input type="number" id="emp_score_nx" value="85" max="100">
+                <div class="cheat-zone"><input type="checkbox" id="cheat_nx"> 複查缺失/舞弊</div>
+            </div>
+        </div>
+        <small style="color:#d32f2f; display:block; margin-top:5px; font-weight:bold;">⚠️ 防弊警示：若複查發現刻意打高分、缺失掩蓋或舞弊，該店員工平均分數將強制以 0 分全面核算！</small>
+    </div>
+
+    <h2>三、各店服務與店務缺失管控 (權重 20%)</h2>
+    <div class="section">
+        <div class="grid-2">
+            <div>
+                <label>當週各店開門會議總缺席場次 (4店×7天=28場)</label>
+                <input type="number" id="miss_meeting" value="0" min="0" max="28">
+            </div>
+            <div>
+                <label>當週全
