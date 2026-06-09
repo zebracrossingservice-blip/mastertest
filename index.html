@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zbcsmade 主管職責週評與月度考績系統 V3</title>
+    <title>Zbcsmade 主管職責週評與月度考績系統 V5</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f5f7fa; color: #1c1c1e; margin: 0; padding: 20px; line-height: 1.5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; color: #1c1c1e; margin: 0; padding: 20px; line-height: 1.5; }
         .container { max-width: 1150px; background: white; margin: 0 auto; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         h1 { text-align: center; color: #1c1c1e; font-size: 28px; margin-bottom: 5px; font-weight: 700; }
         .subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
-        h2 { font-size: 18px; color: #0071e3; margin-top: 35px; border-left: 5px solid #0071e3; padding-left: 12px; margin-bottom: 15px; }
+        h2 { font-size: 18px; color: #0071e3; margin-top: 35px; border-left: 5px solid #0071e3; padding-left: 12px; margin-bottom: 5px; }
+        .rule-hint { font-size: 12px; color: #555; background: #e3f2fd; padding: 8px 12px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #0071e3; font-weight: 500; }
         .section { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border: 1px solid #e5e5ea; }
         .grid-flex { display: flex; flex-wrap: wrap; gap: 15px; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .card { background: white; padding: 15px; border-radius: 8px; border: 1px solid #dcdcdc; }
         .shop-title { font-weight: bold; color: #e91e63; display: block; margin-bottom: 10px; font-size: 15px; border-bottom: 1px dashed #e91e63; padding-bottom: 4px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; color: #333; }
-        input[type="number"], select, input[type="text"], textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 13px; }
+        label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 13px; color: #333; }
+        .input-desc { font-size: 11px; color: #666; margin-bottom: 6px; }
+        input[type="number"], select, input[type="text"], textarea, input[type="date"] { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 13px; }
         input[type="checkbox"] { transform: scale(1.1); margin-right: 4px; vertical-align: middle; }
         .upt-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
         .upt-grid input { padding: 4px; text-align: center; font-size: 11px; }
@@ -30,10 +33,11 @@
         .btn-calc { background-color: #0071e3; color: white; border: none; padding: 16px; font-size: 18px; font-weight: bold; border-radius: 8px; width: 100%; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 12px rgba(0,113,227,0.3); }
         .btn-calc:hover { background-color: #005bb5; }
         .result-box { margin-top: 30px; padding: 25px; border-radius: 12px; display: none; background-color: #e8f5e9; border: 1px solid #c8e6c9; color: #2e7d32; }
-        .summary-text { width: 100%; height: 350px; font-family: monospace; background: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 10px; font-size: 13px; line-height: 1.6; }
+        .summary-text { width: 100%; height: 380px; font-family: monospace; background: #212529; color: #f8f9fa; padding: 15px; border-radius: 6px; margin-top: 10px; font-size: 13px; line-height: 1.6; }
         .btn-copy { background-color: #28a745; color: white; border: none; padding: 12px; font-size: 15px; font-weight: bold; border-radius: 6px; width: 100%; cursor: pointer; margin-top: 8px; }
         .danger-zone { background: #fff5f5; border: 1px dashed #ff3b30; padding: 12px; border-radius: 6px; color: #d32f2f; font-size: 12px; margin-top: 8px; }
         .sub-group-title { font-size: 13px; font-weight: bold; color: #0071e3; margin-top: 10px; margin-bottom: 5px; }
+        .stock-alert { font-size: 11px; font-weight: bold; color: #d32f2f; margin-top: 2px; }
     </style>
 </head>
 <body>
@@ -43,9 +47,14 @@
     <div class="subtitle">營運核心：環境氣候修正 / 業績件數UPT聯動 / 人力教育防弊 / 店務社群追蹤機制</div>
 
     <!-- 基本資訊與天氣機制 -->
-    <h2>基本考核設定 & 天氣環境修正機制</h2>
+    <h2>基本考核設定 & 天氣環境與繳交時效修正機制</h2>
+    <div class="rule-hint">
+        ℹ️ <b>時效與氣候規範：</b><br>
+        1. <b>🌧️ 氣候修正：</b>每輸入 1 個雨天，當週整體門市件數達標率自動補償修正另加 2%。<br>
+        2. <b>⏰ 行政時效大限（延遲繳交每天扣 2.5 分）</b>：本表單規定最晚於<b>考核當週的次週一</b>前完成繳交。系統將依據你輸入的「考核截止日期」與「實際繳交日期」進行智能反查，每晚一天送出直接從總分強制<b>扣除 2.5 分</b>！
+    </div>
     <div class="section grid-flex">
-        <div style="flex: 1; min-width: 150px;">
+        <div style="flex: 1; min-width: 130px;">
             <label>考核評分週別</label>
             <select id="weekSelect">
                 <option value="第一週">第一週</option>
@@ -54,25 +63,39 @@
                 <option value="第四週">第四週</option>
             </select>
         </div>
-        <div style="flex: 1; min-width: 150px;">
+        <div style="flex: 1; min-width: 140px;">
             <label>主管姓名</label>
             <input type="text" id="managerName" value="門市核心主管">
         </div>
-        <div style="flex: 2; min-width: 300px; background: #fff3cd; padding: 10px; border-radius: 6px; border: 1px solid #ffeeba;">
-            <label style="color: #856404;">🌧️ 當週天氣補償設定 (每有1個雨天，整體營業額達標率另加 3%)</label>
+        <div style="flex: 1.2; min-width: 160px;">
+            <label>考核截止日 (當週週日)</label>
+            <input type="date" id="evaluationDate" onchange="autoSetSubmitLimit()">
+        </div>
+        <div style="flex: 1.2; min-width: 160px;">
+            <label>實際繳交考績日期</label>
+            <input type="date" id="submitDate">
+        </div>
+        <div style="flex: 2; min-width: 250px; background: #fff3cd; padding: 10px; border-radius: 6px; border: 1px solid #ffeeba;">
+            <label style="color: #856404;">🌧️ 當週天氣狀況設定</label>
             <div style="display: flex; gap: 15px; margin-top: 5px;">
                 <div>晴天天數：<select id="sunnyDays" onchange="updateWeatherDays(7 - this.value)">
                     <option value="7" selected>7 天</option><option value="6">6 天</option><option value="5">5 天</option>
                     <option value="4">4 天</option><option value="3">3 天</option><option value="2">2 天</option>
                     <option value="1">1 天</option><option value="0">0 天</option>
                 </select></div>
-                <div>雨天天數：<span id="rainyDaysDisplay" style="font-weight: bold; color: #ff3b30;">0</span> 天 (達標率補償 +<span id="weatherBonusDisplay">0</span>%)</div>
+                <div>雨天天數：<span id="rainyDaysDisplay" style="font-weight: bold; color: #ff3b30;">0</span> 天 (達標率 +<span id="weatherBonusDisplay">0</span>%)</div>
             </div>
         </div>
     </div>
 
     <!-- 一、財務與業績管控 -->
-    <h2>一、財務與業績管控 (權重：件數達標率 25分 + UPT 達標率 15分)</h2>
+    <h2>一、財務、業績管控與庫存件數管控 (權重：件數達標率 30分 + UPT 7日均分 10分)</h2>
+    <div class="rule-hint">
+        🎯 <b>計分標準：</b><br>
+        1. <b>週件數達標率 (30分)</b>：週目標為「月目標 / 4」。實得件數分數 = 30分 × (實際件數 / 週目標 + 天氣補償%)。<br>
+        2. <b>7日UPT均分 (10分)</b>：低於 2.0 為不及格（單店扣該店比重 2.5分）；2.0 以上及格；2.2 以上優良；2.4 以上優秀滿分。<br>
+        3. <b>⚠️ 重大庫存大限重罰 (每超標一店扣 5 分)</b>：嚴格執行獲利與庫存管控！<b>南西限制 3400件內、中山 2800件內、中原 1500件內、新竹 900件內</b>。凡超過健康指標者，直接從當週總分扣 5 分。
+    </div>
     <div class="section">
         <div class="grid-4">
             <!-- 中原店 -->
@@ -80,7 +103,11 @@
                 <span class="shop-title">中原店</span>
                 <label>本月目標件數</label><input type="number" id="target_zy" value="8800">
                 <label>當週實際件數</label><input type="number" id="act_zy" value="2200">
-                <label style="margin-top:10px; color:#555;">7日UPT輸入：</label>
+                <label style="margin-top:8px; color:#b71c1c;">本週實際庫存件數</label>
+                <input type="number" id="stock_zy" value="1450">
+                <div class="stock-alert">💡 健康指標：1500 件內</div>
+                
+                <label style="margin-top:12px; color:#555;">7日UPT輸入：</label>
                 <div class="week-days-labels"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
                 <div class="upt-grid" id="upt_zy_inputs">
                     <input type="number" step="0.1" value="2.1"> <input type="number" step="0.1" value="2.2">
@@ -94,7 +121,11 @@
                 <span class="shop-title">新竹店</span>
                 <label>本月目標件數</label><input type="number" id="target_xz" value="1400">
                 <label>當週實際件數</label><input type="number" id="act_xz" value="350">
-                <label style="margin-top:10px; color:#555;">7日UPT輸入：</label>
+                <label style="margin-top:8px; color:#b71c1c;">本週實際庫存件數</label>
+                <input type="number" id="stock_xz" value="850">
+                <div class="stock-alert">💡 健康指標：900 件內</div>
+                
+                <label style="margin-top:12px; color:#555;">7日UPT輸入：</label>
                 <div class="week-days-labels"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
                 <div class="upt-grid" id="upt_xz_inputs">
                     <input type="number" step="0.1" value="2.1"> <input type="number" step="0.1" value="2.1">
@@ -108,7 +139,11 @@
                 <span class="shop-title">中山店</span>
                 <label>本月目標件數</label><input type="number" id="target_zs" value="6400">
                 <label>當週實際件數</label><input type="number" id="act_zs" value="1600">
-                <label style="margin-top:10px; color:#555;">7日UPT輸入：</label>
+                <label style="margin-top:8px; color:#b71c1c;">本週實際庫存件數</label>
+                <input type="number" id="stock_zs" value="2750">
+                <div class="stock-alert">💡 健康指標：2800 件內</div>
+                
+                <label style="margin-top:12px; color:#555;">7日UPT輸入：</label>
                 <div class="week-days-labels"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
                 <div class="upt-grid" id="upt_zs_inputs">
                     <input type="number" step="0.1" value="2.1"> <input type="number" step="0.1" value="2.2">
@@ -122,7 +157,11 @@
                 <span class="shop-title">南西店</span>
                 <label>本月目標件數</label><input type="number" id="target_nx" value="7200">
                 <label>當週實際件數</label><input type="number" id="act_nx" value="1800">
-                <label style="margin-top:10px; color:#555;">7日UPT輸入：</label>
+                <label style="margin-top:8px; color:#b71c1c;">本週實際庫存件數</label>
+                <input type="number" id="stock_nx" value="3350">
+                <div class="stock-alert">💡 健康指標：3400 件內</div>
+                
+                <label style="margin-top:12px; color:#555;">7日UPT輸入：</label>
                 <div class="week-days-labels"><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div></div>
                 <div class="upt-grid" id="upt_nx_inputs">
                     <input type="number" step="0.1" value="2.1"> <input type="number" step="0.1" value="2.1">
@@ -135,10 +174,17 @@
     </div>
 
     <!-- 二、人員招募與教育培訓 -->
-    <h2>二、人員招募、編制與教育培訓 (內含員工考績、個人短評與防弊機制 - 滿分15分+扣分題)</h2>
+    <h2>二、人員招募、編制與教育培訓 (權重：自評與員工均分連動 15分 + 指標時效扣分題)</h2>
+    <div class="rule-hint">
+        📋 <b>嚴格人力與訓練規章：</b><br>
+        1. <b>編制少人重扣</b>：對照標準（中山+南西共6正4兼、中原3正、新竹2正1兼）。每少 1 人，從總分直接<b>扣 2 分</b>。<br>
+        2. <b>缺人怠慢加倍罰</b>：若編制有少人，且本週面試低於 3 人或試上低於 1 人，視為招募怠惰，加倍重扣 <b>4 分</b>。<br>
+        3. <b>22項訓練時效考核</b>：依入職時間反查：<b>3天需會10項、1週需會15項、2週需會22項全熟、3週需考核認證完畢</b>。每有一名同仁考核落後，主管總分直接<b>扣 2 分</b>。<br>
+        4. <b>🔒 舞弊零容忍</b>：若總部反查發現主管刻意高打同仁分數、掩蓋教育漏失，勾選反查舞弊後，此大項員工考績均分聯動直接<b>以 0 分全面核算</b>。
+    </div>
     <div class="section">
-        <!-- 門市現有人力編制核對 (扣分題) -->
-        <label style="color:#0071e3; font-size:14px;">👥 門市現有人力編制（核對標準：中山+南西共6正4兼、中原3正、新竹2正1兼）</label>
+        <!-- 門市現有人力編制核對 -->
+        <label style="color:#0071e3; font-size:14px;">👥 門市現有人力編制核對</label>
         <div class="grid-4" style="background:#fff; padding:12px; border-radius:6px; border:1px solid #ddd; margin-bottom:15px;">
             <div><span class="shop-title">中山+南西現有</span>
                 <label>正職人數</label><input type="number" id="hr_zs_nx_f" value="6">
@@ -152,21 +198,21 @@
                 <label>正職人數</label><input type="number" id="hr_xz_f" value="2">
                 <label>兼職人數</label><input type="number" id="hr_xz_p" value="1">
             </div>
-            <div style="background:#fff5f5; padding:8px; border-radius:6px;">
-                <span style="color:#d32f2f; font-weight:bold; font-size:12px;">⚠️ 編制懲罰說明：</span>
-                <small style="color:#555; display:block; font-size:11px; margin-top:4px;">每落後編制少 1 人，將從主管總分直接**扣 2 分**。</small>
+            <div style="background:#fff5f5; padding:8px; border-radius:6px; border:1px solid #ffcdd2;">
+                <span style="color:#d32f2f; font-weight:bold; font-size:12px;">🚨 標準編制：</span>
+                <small style="color:#555; display:block; font-size:11px; margin-top:2px;">中山+南西: 6正4兼<br>中原: 3正 | 新竹: 2正1兼</small>
             </div>
         </div>
 
         <!-- 面試動態與人力資源處理 -->
-        <label style="color:#0071e3; font-size:14px;">🔍 本週招募與面試動態數據（影響缺人時的加倍扣分機制）</label>
+        <label style="color:#0071e3; font-size:14px;">🔍 本週招募與面試動態數據追蹤</label>
         <div class="grid-flex" style="background:#fff; padding:12px; border-radius:6px; border:1px solid #ddd; margin-bottom:15px; gap:10px;">
             <div style="flex:1;"><label>本週面試人數</label><input type="number" id="rec_interview" value="4"></div>
             <div style="flex:1;"><label>本週試上人數</label><input type="number" id="rec_trial" value="1"></div>
             <div style="flex:1;"><label>本週錄取人數</label><input type="number" id="rec_hire" value="1"></div>
             <div style="flex:1;"><label>本週離職人數</label><input type="number" id="rec_quit" value="0"></div>
             <div style="flex:2;">
-                <label>招募積極度個人自評</label>
+                <label>招募積極度主管自評分數</label>
                 <select id="recruit_self_score">
                     <option value="5" selected>當週積極安排面試/試上 (5分)</option>
                     <option value="4">當週稍有時間不足，仍持續積極找人 (4分)</option>
@@ -177,9 +223,9 @@
             </div>
         </div>
 
-        <!-- 員工明細動態清單區 (已新增短評備註) -->
+        <!-- 員工明細動態清單區 -->
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <label style="color: #e91e63; font-size:14px;">📊 團隊在職人員「22項指標學習進度」與「當週考績分數」聯動區 (內含主管短評備註欄)</label>
+            <label style="color: #e91e63; font-size:14px;">📊 團隊在職人員「22項指標學習進度」與「當週考績分數」聯動區 (上限 15 分)</label>
             <button class="btn-add" onclick="addEmployeeRow()">＋ 新增在職人員欄位</button>
         </div>
         
@@ -188,11 +234,11 @@
                 <tr>
                     <th style="width: 12%;">所屬分店</th>
                     <th style="width: 12%;">同仁姓名</th>
-                    <th style="width: 13%;">入職時間</th>
+                    <th style="width: 13%;">在職時間</th>
                     <th style="width: 15%;">已學會指標數 (共22項)</th>
                     <th style="width: 13%;">當週同仁考績</th>
-                    <th style="width: 25%;">主管給同仁的當週短評備註 (打給老闆看)</th>
-                    <th style="width: 10%;">操作</th>
+                    <th>主管給同仁的當週短評備註 (打給老闆看)</th>
+                    <th style="width: 8%;">操作</th>
                 </tr>
             </thead>
             <tbody id="empTableBody">
@@ -217,7 +263,6 @@
             </tbody>
         </table>
         
-        <!-- 核心舞弊反查機制 -->
         <div class="danger-zone">
             <strong>🔒 總部防弊與反查重懲機制：</strong><br>
             <span style="display:inline-block; margin-top:4px;">
@@ -227,10 +272,15 @@
         </div>
     </div>
 
-    <!-- 三、各店服務與店務缺失管控 (已重構為開班/閉店/主管定位監控) -->
-    <h2>三、各店服務與店務缺失管控 (權重 20% - 凡「未勾選」之項目，每格扣 1 分)</h2>
+    <!-- 三、各店服務與店務缺失管控 -->
+    <h2>三、各店服務與店務缺失管控 (權重 20% - 凡「未勾選(留空)」之項目，每格扣 1 分)</h2>
     <div class="section">
-        <label style="color:#d32f2f; font-weight: bold;">🏪 四店一週 7 日營運狀態查核矩陣（全面優良請打勾！「留空未勾選」代表該班次發生店務缺失，每格執行扣 1 分）</label>
+        <div class="rule-hint">
+            ⚙️ <b>矩陣查核規章：</b><br>
+            1. <b>全面優良請打勾</b>。凡是留空「未勾選」之格子，皆代表該班次發生缺失，<b>每漏勾一格直接扣 1 分</b>。<br>
+            2. <b>主管定位查核</b>：最後一列為主管核心指標。主管每天開門前必須到現場進行定位檢查，並同時透過遠端監控其他門市。<b>每漏勾一天扣 1 分</b>。<br>
+            3. <b>🔥 跨店加倍處罰機制</b>：若同一週內發生缺失的門市達到 <b>2 間店（含）以上</b>，開班與閉店的缺失扣分將<b>自動乘以 2 倍計算</b>。若被總部稽查或客訴發現漏報，將面臨從重懲處。
+        </div>
         
         <table style="margin-top:10px;">
             <thead>
@@ -241,27 +291,27 @@
             <tbody>
                 <!-- 開班店務 -->
                 <tr><td rowspan="4" style="background:#f1f3f5; font-weight:bold;">☀️ 開班店務完成</td><td style="font-weight:bold; color:#e91e63;">中原店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="開班" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中文" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">新竹店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="開班" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">中山店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="開班" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">南西店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="開班" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td></tr>
                 
                 <!-- 閉店店務 -->
                 <tr><td rowspan="4" style="background:#e5e5ea; font-weight:bold;">🌙 閉店店務完成</td><td style="font-weight:bold; color:#e91e63;">中原店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" data-type="閉店" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中文" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中原" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">新竹店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" data-type="閉店" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td><td><input type="checkbox" class="shop-miss" data-shop="新竹" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">中山店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" data-type="閉店" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td><td><input type="checkbox" class="shop-miss" data-shop="中山" checked></td></tr>
                 <tr><td style="font-weight:bold; color:#e91e63;">南西店</td>
-                    <td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" data-type="閉店" checked></td></tr>
+                    <td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td><td><input type="checkbox" class="shop-miss" data-shop="南西" checked></td></tr>
 
                 <!-- 主管自身定位監控核查 -->
                 <tr>
-                    <td colspan="2" style="background:#fff3cd; font-weight:bold; color:#856404; text-align:left; padding-left:15px;">🔍 主管每日開門前現場定位檢查該店 ＆ 監控遠端其他門市落實</td>
+                    <td colspan="2" style="background:#fff3cd; font-weight:bold; color:#856404; text-align:left; padding-left:15px;">🔍 主管每日開店前至「現場定位檢查」並「遠端監控巡查」其餘門市</td>
                     <td><input type="checkbox" class="manager-loc-check" checked></td>
                     <td><input type="checkbox" class="manager-loc-check" checked></td>
                     <td><input type="checkbox" class="manager-loc-check" checked></td>
@@ -274,16 +324,20 @@
         </table>
         <div style="margin-top:12px;">
             <label>當週缺失具體原因說明 (若有任何留空未勾選項目，請在此備註說明)</label>
-            <input type="text" id="shop_miss_note" placeholder="範例：週四中山店開班遲到扣分；主管週日因處理客訴未完成其餘門市開班遠端監控扣分。">
+            <input type="text" id="shop_miss_note" placeholder="請在此輸入當週被扣分的具體細節">
         </div>
-        <small style="color:#e91e63; font-weight:bold; display:block; margin-top:8px;">⚠️ 跨店加倍機制依舊生效：若系統偵測到留空未勾選之分店總數達 2 間店（含）以上時，該週缺失總扣分將自動乘以 2 倍計算！</small>
     </div>
 
     <!-- 四、社群行銷與市場觀察 -->
-    <h2>四、社群行銷與市場觀察 (權重 20% - 漏一分店項目直接執行自動扣分)</h2>
+    <h2>四、社群行銷與市場觀察 (權重 20% - 漏一項目執行精準扣分)</h2>
+    <div class="rule-hint">
+        📱 <b>社群與商圈指標規則：</b><br>
+        1. <b>社群矩陣核查 (10分)</b>：四店常態應發滿 28 次限動與訊息清空。凡是留空「未勾選」之不合規紀錄，<b>每少一個扣 1 分</b>。<br>
+        2. <b>市場觀察落實 (10分)</b>：會議、報告、對談全面實施跨店查核。<b>會議少一店扣 1 分、商圈報告少一店扣 1.5 分、員工對談少一店扣 1 分</b>。
+    </div>
     <div class="section">
         <!-- 社群限動與小盒子 -->
-        <label style="font-weight:bold; color:#0071e3;">📱 門市每日社群限動 (5篇以上) 與小盒子訊息回覆核查 (合規請打勾，留空代表不合規)</label>
+        <label style="font-weight:bold; color:#0071e3;">📱 門市每日社群限動 (5篇以上) 與小盒子訊息回覆核查 (合規請打勾，留空未勾選扣 1 分)</label>
         <table style="margin-top:8px; margin-bottom:20px;">
             <thead>
                 <tr>
@@ -302,45 +356,43 @@
             </tbody>
         </table>
 
-        <!-- 市場觀察、會議、對談 (已全部修改為四間門市獨立勾選結構) -->
+        <!-- 市場觀察、會議、對談 -->
         <label style="font-weight:bold; color:#0071e3;">🗺️ 主管每週核心管理指標分店落實清單 (未勾選之項目將精準執行扣分機制)</label>
         <div class="grid-flex" style="gap:15px; margin-top:8px;">
             <!-- 1. 營運會議 -->
             <div class="card" style="flex:1; min-width:250px;">
-                <div class="sub-group-title">1. 每週聯合營運開會落實</div>
+                <div class="sub-group-title">1. 每週聯合營運開會落實 (-1分/店)</div>
                 <label><input type="checkbox" id="m_meet_zy" checked> 中原店會議已主持</label>
                 <label><input type="checkbox" id="m_meet_xz" checked> 新竹店會議已主持</label>
                 <label><input type="checkbox" id="m_meet_zs" checked> 中山店會議已主持</label>
                 <label><input type="checkbox" id="m_meet_nx" checked> 南西店會議已主持</label>
-                <small style="color:#666;">(每少召開一個門市營運會議扣 1 分)</small>
             </div>
             <!-- 2. 商圈考察報告 -->
             <div class="card" style="flex:1; min-width:250px;">
-                <div class="sub-group-title">2. 每週商圈市場考察報告繳交</div>
+                <div class="sub-group-title">2. 每週商圈考察報告繳交 (-1.5分/店)</div>
                 <label><input type="checkbox" id="m_rep_zy" checked> 中原商圈報告已繳交</label>
                 <label><input type="checkbox" id="m_rep_xz" checked> 新竹商圈報告已繳交</label>
                 <label><input type="checkbox" id="m_rep_zs" checked> 中山商圈報告已繳交</label>
                 <label><input type="checkbox" id="m_rep_nx" checked> 南西商圈報告已繳交</label>
-                <small style="color:#666;">(每少提交一份商圈報告扣 1.5 分)</small>
             </div>
             <!-- 3. 員工對談 -->
             <div class="card" style="flex:1; min-width:250px;">
-                <div class="sub-group-title">3. 員工 1對1 深度訪談對談</div>
+                <div class="sub-group-title">3. 員工 1對1 深度訪談對談 (-1分/店)</div>
                 <label><input type="checkbox" id="m_talk_zy" checked> 中原店同仁已對談</label>
                 <label><input type="checkbox" id="m_talk_xz" checked> 新竹店同仁已對談</label>
                 <label><input type="checkbox" id="m_talk_zs" checked> 中山店同仁已對談</label>
                 <label><input type="checkbox" id="m_talk_nx" checked> 南西店同仁已對談</label>
-                <small style="color:#666;">(每少與一間店的同仁落實對談扣 1 分)</small>
             </div>
         </div>
     </div>
 
     <!-- 五、重大營運大忌與異常扣分機制 -->
-    <h2>五、重大營運大忌與異常異動扣分機制 (一體化複查防弊重大考驗)</h2>
+    <h2>五、重大營運大忌與異常異動扣分機制 (一體化複查防弊重大考驗 - 直接扣減最終總分)</h2>
     <div class="section" style="background:#fff5f5; border:1px solid #ffcdd2;">
         <div class="grid-2">
             <div>
-                <label style="color:#b71c1c; font-weight:bold;">🔥 1. 門市特殊開關門異常狀況：</label>
+                <label style="color:#b71c1c; font-weight:bold;">🔥 1. 門市特殊開關門異常狀況重罰：</label>
+                <div class="input-desc">延後開幕/提早關門重扣 10 分；發生一天不開門事件重扣 20 分。</div>
                 <select id="taboo_shop_status">
                     <option value="正常">各分店本週皆完全正常開關門</option>
                     <option value="延關">因人力調配導致「延後開幕/提早關門」(-10分)</option>
@@ -348,7 +400,8 @@
                 </select>
             </div>
             <div>
-                <label style="color:#b71c1c; font-weight:bold;">🔥 2. 核心/高分同仁臨時自請離職：</label>
+                <label style="color:#b71c1c; font-weight:bold;">🔥 2. 高分/優秀核心同仁臨時離職重罰：</label>
+                <div class="input-desc">考驗主管留人與談心防漏能力！依離職人員近兩週考績積分執行重扣。兼職扣分折半。</div>
                 <select id="taboo_quit_status">
                     <option value="無">本週無核心或高分同仁異常離職</option>
                     <option value="80">近兩週積分 80分以上 同仁臨時自請離職 (-5分)</option>
@@ -368,7 +421,7 @@
         <h3 style="margin-top:0; color:#1b5e20; border-bottom: 2px solid #a5d6a7; padding-bottom:8px;">📊 評分結果：【<span id="resWeek"></span>】核心職責考核診斷報告</h3>
         <div class="grid-2" style="margin-bottom:15px;">
             <div style="font-size: 20px; font-weight: bold; color:#1b5e20;">當週核心總得分：<span id="totalScore" style="font-size:32px; color:#0071e3;">0</span> 分</div>
-            <div style="font-size: 18px; font-weight: bold; color:#1b5e20;">考核評定等第：<span id="gradeText" style="font-size:22px; color:#d81b60;">-</span></div>
+            <div style="font-size: 16px; font-weight: bold; color:#1b5e20;">考核評定等第：<span id="gradeText" style="font-size:20px;">-</span></div>
         </div>
         
         <!-- 連續四週紀錄追蹤表 -->
@@ -386,7 +439,7 @@
 
         <!-- 月度獎金與去留決策區 -->
         <div id="monthlyReportCard" style="margin-top:20px; padding:15px; background:#fff; border-radius:8px; border:2px solid #0071e3; display:none;">
-            <h4 style="margin:0 0 8px 0; color:#0071e3; font-size:16px;">👑 月度考績結算判定與獎金核發決策</h4>
+            <h4 style="margin:0 0 8px 0; color:#0071e3; font-size:16px;">👑 月度大考評去留與薪酬核發決策 (滿4週自動解鎖)</h4>
             <div id="monthlyDecisionText" style="font-weight:bold; font-size:14px; color:#333; line-height:1.6;"></div>
         </div>
 
@@ -399,12 +452,22 @@
 <script>
     const weeklyRecord = { "第一週": null, "第二週": null, "第三週": null, "第四週": null };
 
+    // 預設日期初始化：考核截止日預設上週日，實際繳交日預設今天
+    window.onload = function() {
+        const today = new Date();
+        document.getElementById('submitDate').value = today.toISOString().split('T')[0];
+        
+        // 抓取最近的上個週日作為預設考核截止日
+        const lastSunday = new Date();
+        lastSunday.setDate(today.getDate() - today.getDay());
+        document.getElementById('evaluationDate').value = lastSunday.toISOString().split('T')[0];
+    };
+
     function updateWeatherDays(rainDays) {
         document.getElementById('rainyDaysDisplay').innerText = rainDays;
-        document.getElementById('weatherBonusDisplay').innerText = rainDays * 3;
+        document.getElementById('weatherBonusDisplay').innerText = rainDays * 2;
     }
 
-    // 新增在職人員表格列 (包含備註短評輸入框)
     function addEmployeeRow() {
         const tbody = document.getElementById('empTableBody');
         const tr = document.createElement('tr');
@@ -423,30 +486,54 @@
         btn.closest('tr').remove();
     }
 
-    // 核心運算主邏輯
     function runZbcsmadeKpi() {
         const currentWeek = document.getElementById('weekSelect').value;
         const manager = document.getElementById('managerName').value;
 
-        // 天氣補償
-        const rainDays = parseInt(document.getElementById('rainyDaysDisplay').innerText) || 0;
-        const weatherBonus = rainDays * 0.03;
+        // --- ⏰ 行政時效大限自動判別與扣分邏輯 ---
+        const evalDateVal = document.getElementById('evaluationDate').value;
+        const submitDateVal = document.getElementById('submitDate').value;
+        
+        let delayDays = 0;
+        let delay_deduction = 0;
+        let delay_msg = "✅ 準時繳交";
 
-        // 一、財務管控運算
+        if(evalDateVal && submitDateVal) {
+            const evalDateObj = new Date(evalDateVal);
+            const submitDateObj = new Date(submitDateVal);
+            
+            // 截止目標：次週一。所以是在週日截止日再加 1 天
+            const limitDateObj = new Date(evalDateObj);
+            limitDateObj.setDate(limitDateObj.getDate() + 1);
+            
+            // 計算相差天數
+            const timeDiff = submitDateObj.getTime() - limitDateObj.getTime();
+            if (timeDiff > 0) {
+                delayDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                delay_deduction = delayDays * 2.5;
+                delay_msg = `⚠️ 延遲繳交懲罰：規定次週一前繳交，實際延遲 ${delayDays} 天 ➔ 強制重扣 ${delay_deduction.toFixed(1)} 分！`;
+            }
+        }
+
+        // 天氣補償修正
+        const rainDays = parseInt(document.getElementById('rainyDaysDisplay').innerText) || 0;
+        const weatherBonus = rainDays * 0.02;
+
         const shops = [
-            { id: 'zy', name: '中原店' }, { id: 'xz', name: '新竹店' },
-            { id: 'zs', name: '中山店' }, { id: 'nx', name: '南西店' }
+            { id: 'zy', name: '中原店', maxStock: 1500 }, { id: 'xz', name: '新竹店', maxStock: 900 },
+            { id: 'zs', name: '中山店', maxStock: 2800 }, { id: 'nx', name: '南西店', maxStock: 3400 }
         ];
         
         let total_vol_rate = 0;
-        let upt_score_pool = 15;
+        let upt_score_pool = 10;
+        let stock_deduction = 0;
+        let stock_alert_logs = [];
         let shop_upt_details = {};
 
         shops.forEach(shop => {
             const tgt_week = (parseFloat(document.getElementById(`target_${shop.id}`).value) || 0) / 4;
             const act_week = parseFloat(document.getElementById(`act_${shop.id}`).value) || 0;
             let raw_rate = tgt_week > 0 ? (act_week / tgt_week) : 0;
-            
             let final_rate = raw_rate + weatherBonus;
             if(final_rate > 1.0) final_rate = 1.0;
             total_vol_rate += final_rate;
@@ -457,11 +544,17 @@
             const avg_upt = sum_upt / 7;
             shop_upt_details[shop.name] = avg_upt.toFixed(2);
 
-            if (avg_upt < 2.0) { upt_score_pool -= 3.75; }
-            else if (avg_upt >= 2.0 && avg_upt < 2.2) { upt_score_pool -= 1.5; }
+            if (avg_upt < 2.0) { upt_score_pool -= 2.5; }
+            else if (avg_upt >= 2.0 && avg_upt < 2.2) { upt_score_pool -= 1.0; }
+
+            const cur_stock = parseInt(document.getElementById(`stock_${shop.id}`).value) || 0;
+            if(cur_stock > shop.maxStock) {
+                stock_deduction += 5;
+                stock_alert_logs.push(`⚠️ ${shop.name}庫存超標：實際 ${cur_stock}件 (健康指標: ${shop.maxStock}件內) ➔ 執行重扣 5 分！`);
+            }
         });
 
-        const vol_score = (total_vol_rate / 4) * 25;
+        const vol_score = (total_vol_rate / 4) * 30;
         if(upt_score_pool < 0) upt_score_pool = 0;
 
         // 二、人員與編制
@@ -491,7 +584,7 @@
         }
         const recruit_self = parseFloat(document.getElementById('recruit_self_score').value) || 0;
 
-        // 員工學習查核與短評收集
+        // 員工訓練與短評
         const empRows = document.querySelectorAll('#empTableBody tr');
         let total_emp_score = 0;
         let emp_count = empRows.length;
@@ -512,7 +605,7 @@
             else if(timeType === "二個月內" && skills < 22) { skill_drop_count++; }
             else if(timeType === "二個月以上" && skills < 22) { skill_drop_count++; }
 
-            emp_summary_text += `     ▪️ [${shopName}店] ${name} (${timeType}) | 學習指標:${skills}項 | 考績:${score}分\n       ➔ 主管評語：${note}\n`;
+            emp_summary_text += `     ▪️ [${shopName}店] ${name} (${timeType}) | 已會指標:${skills}項 | 考績:${score}分\n       ➔ 主管短評：${note}\n`;
         });
 
         let skill_deduction = skill_drop_count * 2;
@@ -527,19 +620,18 @@
         let total_hr_score = recruit_self + emp_index_score - skill_deduction;
         if(total_hr_score < 0) total_hr_score = 0;
 
-        // 三、各店服務與店務缺失管控 (未勾選扣1分，跨店缺失加倍)
+        // 三、各店店務管控 (未勾選扣1分)
         const missBoxes = document.querySelectorAll('.shop-miss');
         let total_miss_count = 0;
         let active_miss_shops = new Set();
 
         missBoxes.forEach(box => {
-            if(!box.checked) { // 未勾選代表有缺失
+            if(!box.checked) {
                 total_miss_count++;
                 active_miss_shops.add(box.getAttribute('data-shop'));
             }
         });
 
-        // 主管自身 7 日定位監控核查 (未勾選一格扣 1 分)
         const managerLocBoxes = document.querySelectorAll('.manager-loc-check');
         let manager_loc_fail = 0;
         managerLocBoxes.forEach(box => { if(!box.checked) manager_loc_fail++; });
@@ -549,32 +641,28 @@
         let shop_score = 20 - shop_miss_deduct;
         if (shop_score < 0) shop_score = 0;
 
-        // 四、社群行銷與市場觀察 (權重 20%)
-        // (1) 社群檢核
+        // 四、社群行銷與市場觀察 (漏一格扣1分)
         const socialBoxes = document.querySelectorAll('.social-check');
         let social_fail_count = 0;
         socialBoxes.forEach(box => { if(!box.checked) social_fail_count++; });
-        let social_score = 10 - (social_fail_count * 2);
+        let social_score = 10 - (social_fail_count * 1);
         if(social_score < 0) social_score = 0;
 
-        // (2) 營運開會、考察報告與訪談 (分店獨立扣分化邏輯)
         let market_score = 10;
-        // 會議扣分 (少一個分店扣1分)
         if(!document.getElementById('m_meet_zy').checked) market_score -= 1;
         if(!document.getElementById('m_meet_xz').checked) market_score -= 1;
         if(!document.getElementById('m_meet_zs').checked) market_score -= 1;
         if(!document.getElementById('m_meet_nx').checked) market_score -= 1;
-        // 報告扣分 (少一份扣1.5分)
+        
         if(!document.getElementById('m_rep_zy').checked) market_score -= 1.5;
         if(!document.getElementById('m_rep_xz').checked) market_score -= 1.5;
         if(!document.getElementById('m_rep_zs').checked) market_score -= 1.5;
         if(!document.getElementById('m_rep_nx').checked) market_score -= 1.5;
-        // 訪談扣分 (少一個分店扣1分)
+        
         if(!document.getElementById('m_talk_zy').checked) market_score -= 1;
         if(!document.getElementById('m_talk_xz').checked) market_score -= 1;
         if(!document.getElementById('m_talk_zs').checked) market_score -= 1;
         if(!document.getElementById('m_talk_nx').checked) market_score -= 1;
-        
         if(market_score < 0) market_score = 0;
 
         // 五、重大營運大忌
@@ -589,8 +677,8 @@
         if(taboo_quit === "90") taboo_deduction += 15;
         if(taboo_quit === "兼職") taboo_deduction += 2.5;
 
-        // 計算最終得分
-        let total_score = vol_score + upt_score_pool + total_hr_score + shop_score + social_score + market_score - hr_deduction - recruit_punish_deduct - taboo_deduction;
+        // 核心得分匯總 (連動扣除行政時效分)
+        let total_score = vol_score + upt_score_pool + total_hr_score + shop_score + social_score + market_score - hr_deduction - recruit_punish_deduct - taboo_deduction - stock_deduction - delay_deduction;
         if(total_score < 0) total_score = 0;
 
         let grade = "C (重度需加強資遣邊緣)";
@@ -624,7 +712,7 @@
             } else if (finalScore >= 70 && finalScore < 75) {
                 monthlyMsg = `<span style="color:#c62828; font-size:16px;">🚨 月度大考評：【70-75分 - 營運管理失職】</span><br>💰 <strong>獎金結算：本月管理獎金僅能核發 30%！</strong><br>❗ <strong>處置狀態：【列入重點輔導黑名單】</strong>連續兩個月以此分數將強制列入資遣名單！`;
             } else {
-                monthlyMsg = `<span style="color:#b71c1c; font-size:16px;">🔥 月度大考評：【70分以下 - 重度不適任不稱職】</span><br>💰 <strong>獎金結算：扣除當月所有營運獎金，不予核發！</strong><br>❌ <strong>處置狀態：【即刻列入資遣名單】</strong>依勞動契約啟動不適任解僱流程。`;
+                monthlyMsg = `<span style="color:#b71c1c; font-size:16px;">🔥 月度大考評：【70分以下 - 重度不適任不稱職】</span><br>💰 <strong>獎金結算：扣除當月所有營運獎金，不予核發！</strong><br>❌ <strong>處置狀態：【即刻列入不適任資遣名單】</strong>依勞動契約啟動汰換流程。`;
             }
             document.getElementById('monthlyDecisionText').innerHTML = monthlyMsg;
         } else {
@@ -636,21 +724,29 @@
         document.getElementById('gradeText').innerText = grade;
         document.getElementById('resultArea').style.display = "block";
 
-        // 生成結構化純文字
+        // 生成複製純文字
         let text = `📊 【Zbcsmade 核心主管職責週考核診斷報告】\n`;
         text += `👤 核心被考核人：${manager}  |  📅 考核週期：${currentWeek}\n`;
-        text += `🌧️ 環境變數修正：本週雨天共 ${rainDays} 天，整體門市達標率已補償修正 +${rainDays*3}%\n`;
+        text += `📅 考核區間截止日：${evalDateVal || '未填'}  |  📬 實際填表繳交日：${submitDateVal || '未填'}\n`;
+        text += `⏰ 行政繳交時效評定：${delay_msg}\n`;
+        text += `🌧 *氣候修正補償*：當週雨天共 ${rainDays} 天，整體達標率已補償修正 +${rainDays*2}%\n`;
         text += `====================================\n`;
         text += `得分診斷分析細項：\n`;
-        text += `1️⃣ 財務件數與UPT管控：${(vol_score + upt_score_pool).toFixed(1)} 分\n`;
+        text += `1️⃣ 財務、業績管控與庫存大限：${(vol_score + upt_score_pool - stock_deduction).toFixed(1)} 分\n`;
         text += `   - 四店當週平均UPT表現：\n`;
         for(let shopName in shop_upt_details) { text += `     ▪️ ${shopName}：${shop_upt_details[shopName]} UPT\n`; }
+        if(stock_alert_logs.length > 0) {
+            text += `   - 🚨 庫存爆量超標懲罰扣分 (-5分/店)：\n`;
+            stock_alert_logs.forEach(log => { text += `     ${log}\n`; });
+        } else {
+            text += `   - ✅ 庫存狀態：四家分店本週庫存件數皆完全符合健康指標。\n`;
+        }
         
         text += `2️⃣ 人力資源、編制與教育培訓：${total_hr_score.toFixed(1)} 分\n`;
         text += `   - 門市現有人力落後編制扣分：-${hr_deduction} 分\n`;
         text += `   - 補缺招募動態進度反查：${recruit_p_msg}\n`;
         text += `   - 同仁在職教育落後扣分：-${skill_deduction} 分\n`;
-        text += `   - 團隊考績聯動均分：${avg_emp_performance.toFixed(1)} 分\n`;
+        text += `   - 團隊考績聯動均分：${avg_emp_perf.toFixed(1)} 分\n`;
         text += `   - 📝 主管對團隊成員本週短評明細：\n${emp_summary_text}`;
         if(document.getElementById('cheat_trigger').checked) text += `   🚨 【查核舞弊通報】：經總部複查發現刻意掩蓋缺失，該店分數直接以0分重懲核算！\n`;
         
@@ -660,13 +756,13 @@
         if(document.getElementById('shop_miss_note').value) text += `   - 具體缺失原因與備註：${document.getElementById('shop_miss_note').value}\n`;
         
         text += `4️⃣ 社群與市場分店指標落實度：${(social_score + market_score).toFixed(1)} 分\n`;
-        text += `   - 社群限動與回覆漏發扣分：-${social_fail_count * 2} 分\n`;
+        text += `   - 社群限動與回覆漏發扣分：-${social_fail_count * 1} 分\n`;
         text += `   - 四店聯合會議/商圈報告/同仁對談勾選判定實得：${market_score.toFixed(1)} 分\n`;
         
-        if(taboo_deduction > 0) {
-            text += `🚨 5️⃣ 特殊重大營運大忌扣分：-${taboo_deduction} 分\n`;
-            text += `   - 門市異常開關門狀態：${taboo_shop}\n`;
-            text += `   - 核心同仁異常流失異動：${taboo_quit}\n`;
+        if(taboo_deduction > 0 || delay_deduction > 0) {
+            text += `🚨 5️⃣ 特殊重大營運大忌與行政延遲扣分：-${taboo_deduction + delay_deduction} 分\n`;
+            if(taboo_deduction > 0) text += `   - 門市異常開關門狀態：${taboo_shop} | 核心同仁異常流失：${taboo_quit}\n`;
+            if(delay_deduction > 0) text += `   - 行政懲罰：未於次週一前繳交，共延誤 ${delayDays} 天。\n`;
         }
         text += `------------------------------------\n`;
         text += `🎯 當週核心最終總得分：${total_score.toFixed(1)} 分 ➔ 考績等第：${grade}\n\n`;
@@ -691,7 +787,7 @@
         const txt = document.getElementById('summaryOutput');
         txt.select();
         document.execCommand('copy');
-        alert('Zbcsmade V3 精細管理防弊版報告已成功複製！');
+        alert('Zbcsmade V5 終極行政防弊版報告已成功複製！');
     }
 </script>
 </body>
